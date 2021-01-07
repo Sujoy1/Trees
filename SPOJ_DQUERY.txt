@@ -1,0 +1,168 @@
+#include <iostream>
+#include <algorithm>
+using namespace std;
+typedef long long ll;
+ll sum(ll* FenwickTree, ll index) 
+{ 
+	ll sum = 0;  
+//	index = index + 1; 
+	while (index>0) 
+	{ 
+		sum += FenwickTree[index]; 
+		index -= index & (-index); 
+	} 
+	return sum; 
+} 
+ll query(ll* FenwickTree , ll l , ll r)
+{
+  return sum( FenwickTree,r)-sum(FenwickTree,l-1);
+}
+void update(ll* FenwickTree, ll n, ll index, ll val) 
+{ 
+//	index = index + 1; 
+	while (index <= n) 
+	{ 
+	FenwickTree[index] = val; 
+	index += index & (-index); 
+	} 
+} 
+
+ll *constructFenwickTree(ll* arr, ll n) 
+{ 
+	ll *FenwickTree = new ll[n+1]; 
+	for (ll i=1; i<=n; i++) 
+		FenwickTree[i] = 0; 
+	for (int i=0; i<n; i++) 
+		update(FenwickTree, n, i, arr[i]); 
+	return FenwickTree; 
+}
+ll Inversion_Count(ll* FenwickTree,ll* arr,ll n)
+{
+    ll i;
+	ll inv=0;
+	for(i=n;i>=1;i--)
+	{
+		inv += sum(FenwickTree,arr[i]);
+		update(FenwickTree,n,arr[i],1);
+	}
+	return inv;
+}
+void PrintTree(ll* FenwickTree)
+{
+    for(int i=0;i<10;i++)
+    cout<<FenwickTree[i]<<' ';
+}
+int main() 
+{ 
+    long long i,n,q,l,r;
+    long long arr[1000001] ;
+cin>>n;
+for(i=1;i<=n;i++)
+cin>>arr[i];
+
+    ll maxElement = 0;
+    for (ll i=1; i<=n; i++)
+        if (maxElement < arr[i])
+        maxElement = arr[i];
+    
+    ll FenwickTree[maxElement+1];
+    
+	
+    for (ll i=0; i<=maxElement; i++)
+        FenwickTree[i] = 0;
+ll count = Inversion_Count(FenwickTree,arr,n); 
+cin>>q;
+while(q--)
+{
+    cin>>l>>r;
+    cout<<query(FenwickTree,arr[l],arr[r])<<endl;
+}
+cout<<"Tree is: ";
+PrintTree(FenwickTree);
+cout<<endl;
+	return 0; 
+} 
+#include <iostream>
+#include <algorithm>
+using namespace std;
+typedef long long ll;
+ll sum(ll* FenwickTree, ll index) 
+{ 
+	ll sum = 0;  
+//	index = index + 1; 
+	while (index>0) 
+	{ 
+		sum += FenwickTree[index]; 
+		index -= index & (-index); 
+	} 
+	return sum; 
+} 
+ll query(ll* FenwickTree , ll l , ll r)
+{
+  return sum( FenwickTree,r)-sum(FenwickTree,l-1);
+}
+void update(ll* FenwickTree, ll n, ll index, ll val) 
+{ 
+//	index = index + 1; 
+	while (index <= n) 
+	{ 
+	FenwickTree[index] = val; 
+	index += index & (-index); 
+	} 
+} 
+
+ll *constructFenwickTree(ll* arr, ll n) 
+{ 
+	ll *FenwickTree = new ll[n+1]; 
+	for (ll i=1; i<=n; i++) 
+		FenwickTree[i] = 0; 
+	for (int i=0; i<n; i++) 
+		update(FenwickTree, n, i, arr[i]); 
+	return FenwickTree; 
+}
+ll Inversion_Count(ll* FenwickTree,ll* arr,ll n)
+{
+    ll i;
+	ll inv=0;
+	for(i=n;i>=1;i--)
+	{
+		inv += sum(FenwickTree,arr[i]);
+		update(FenwickTree,n,arr[i],1);
+	}
+	return inv;
+}
+void PrintTree(ll* FenwickTree)
+{
+    for(int i=0;i<10;i++)
+    cout<<FenwickTree[i]<<' ';
+}
+int main() 
+{ 
+    long long i,n,q,l,r;
+    long long arr[1000001] ;
+cin>>n;
+for(i=1;i<=n;i++)
+cin>>arr[i];
+
+    ll maxElement = 0;
+    for (ll i=1; i<=n; i++)
+        if (maxElement < arr[i])
+        maxElement = arr[i];
+    
+    ll FenwickTree[maxElement+1];
+    
+	
+    for (ll i=0; i<=maxElement; i++)
+        FenwickTree[i] = 0;
+ll count = Inversion_Count(FenwickTree,arr,n); 
+cin>>q;
+while(q--)
+{
+    cin>>l>>r;
+    cout<<query(FenwickTree,arr[l],arr[r])<<endl;
+}
+cout<<"Tree is: ";
+PrintTree(FenwickTree);
+cout<<endl;
+	return 0; 
+} 

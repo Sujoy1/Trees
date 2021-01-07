@@ -1,0 +1,47 @@
+#include <iostream> 
+using namespace std; 
+int sum(int* FenwickTree, int index) 
+{ 
+	int sum = 0;  
+	index = index + 1; 
+	while (index>0) 
+	{ 
+		sum += FenwickTree[index]; 
+		index -= index & (-index); 
+	} 
+	return sum; 
+} 
+int query(int* FenwickTree , int l , int r)
+{
+  return sum( FenwickTree,r)-sum(FenwickTree,l);
+}
+int update(int* FenwickTree, int n, int index, int val ,int maxi,int* arr) 
+{ 
+    int ans = query(FenwickTree,arr[index],maxi);
+	index = index + 1; 
+	while (index <= n) 
+	{ 
+	FenwickTree[index] += val; 
+	index += index & (-index); 
+	}
+	return ans;
+} 
+
+int constructFenwickTree(int* arr, int max_element , int n) 
+{ 
+	int *FenwickTree = new int[max_element+1]; 
+	for (int i=1; i<=max_element; i++) 
+		FenwickTree[i] = 0; 
+	int sum=0;
+	for (int i=0; i<n; i++) 
+		sum += update(FenwickTree, n, arr[i] , 1 , max_element,arr); 
+	return sum; 
+} 
+int main() 
+{ 
+	int freq[] = {5 ,6 , 3 , 1, 8 , 2}; 
+	int n = sizeof(freq)/sizeof(freq[0]);
+	int count = constructFenwickTree(freq, 8 ,n); 
+	cout << "Inversion count in the array is : "<<count;
+	return 0; 
+} 

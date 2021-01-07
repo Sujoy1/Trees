@@ -1,0 +1,103 @@
+void buildTree(int* tree,int* a,int index,int s,int e)
+{
+    // Base Case
+    if(s>e)
+    return;
+    
+    // Base Case of Leaf Node
+    
+    if(s==e)
+    {
+        tree[index]=a[s];
+        return;
+    }
+    
+    // Recursive Case
+    
+    int mid =(s+e)/2;
+    buildTree(tree,a,2*index,s,mid);
+    buildTree(tree,a,2*index+1,mid+1,e);
+    int left= tree[2*index];
+    int right = tree[2*index+1];
+    int minimum;
+    if(left<right)
+    minimum=left;
+    else
+    minimum=right;
+    tree[index]=minimum;
+    
+    
+}
+
+// return min in the range qs to qe
+
+int RangeMinquerylazy(int* tree,int index,int s,int e,int qs,int qe)
+{
+    if(s>e)
+    return INT_MAX;
+    
+    // Check if someething is left to be propagatded in the lazy tree
+    /*if(lazy[index]!=0)
+    {
+        tree[index] += lazy[index];
+        if(s!=e)
+        {
+            lazy[2*index] += lazy[index];
+            lazy[2*index+1] += lazy[index];
+              
+        }
+        lazy[index]=0;
+    }
+    */
+    // No overlap
+    
+    if(qs>e||s>qe)
+    return INT_MAX;
+    
+    // Complete Overlap
+    
+    if(s>=qs&&e<=qe)
+    return tree[index];
+    
+    // partial Overlap
+    int mid =(s+e)/2;
+    int left = RangeMinquerylazy(tree,2*index,s,mid,qs,qe);
+    int right = RangeMinquerylazy(tree,2*index+1,mid+1,e,qs,qe);
+   // tree[index]= (left>right)?right:left;
+    if(left>right)
+    return right;
+    else
+    return left;
+}
+/* The functions which 
+builds the segment tree */
+int *constructST(int arr[],int n)
+{
+  //Your code here
+   int* lazy = new int[4*n+1];
+    for(int i=0;i<4*n+1;i++)
+    lazy[i]=0;
+   
+  int* tree  = new int[4*n+1];
+  int index=1;
+  int s=0;
+  int e= n-1;
+  buildTree(tree,arr,index,s,e);
+  return tree;
+}
+
+
+/* The functions returns the
+ min element in the range
+ from a and b using Lazy propagation */
+
+int RMQ(int st[] , int n, int a, int b)
+{
+    int* tree = st;
+    int  index=1;
+    int s=0;
+    int e=n-1;
+    int temp;
+    
+return RangeMinquerylazy(tree,index,s,e,a,b);
+}

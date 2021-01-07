@@ -1,0 +1,161 @@
+#include <iostream>
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long 
+// Constructs the Segment tree
+typedef struct node{
+    ll int sum;
+    ll int best;
+    ll int best_left;
+    ll int best_right;
+    node(ll int a, ll int b, ll int c, ll int d)
+    {
+        sum = a;
+        best = b;
+        best_left = c;
+        best_right = d;
+    }
+}node;
+
+// Creates our Segment Tree 
+
+vector<node> tree(1000002, node(0,0,0,0));
+
+// Creates our Input Array
+
+vector<long long int> A;
+
+void buildTree(int index , int s ,int e)
+{
+    // Base case
+    if(s>e)
+    return ;
+    
+    // Base Case of Leaf Node
+    
+    if(s==e)
+    {
+        tree[index]=node(A[s],A[s],A[s],A[s]);
+        return;
+    }
+    
+    // Recurseive Case
+    int mid=(s+e)/2;
+    buildTree(2*index,s,mid);
+    buildTree(2*index+1,mid+1,e);
+   
+   // Important part is here
+   tree[index].sum = tree[2*index].sum+tree[2*index+1].sum;
+   tree[index].best_left = max(tree[2*index].best_left,tree[2*index].sum+tree[2*index+1].best_left);
+   tree[index].best_right = max(tree[2*index+1].best_right,tree[2*index+1].sum+tree[2*index].best_right);
+   
+   // V.V.I.P
+   
+   tree[index].best =max(tree[2*index].best,tree[2*index+1].best);
+   tree[index].best =max(tree[2*index].best_right+tree[2*index+1].best_left,tree[index].best);
+   tree[index].best =max(tree[2*index].best_left,tree[index].best );
+   tree[index].best =max(tree[2*index+1].best_right,tree[index].best);
+   
+   
+   
+    
+}
+
+// Returns sum value in range qe ,qs;
+
+node query(int index , int s , int e, int qs,int qe)
+{
+    //No Overlapping Case
+    if(qs>e||s>qe)
+    return node(INT_MIN,INT_MIN,INT_MIN,INT_MIN);
+    
+    // Complete Overlap case
+    
+    if(s>=qs&&e<=qe)
+    return tree[index];
+    
+    // Partial Overlap case
+    
+    int mid=(s+e)/2;
+    node q1 = query( 2*index , s ,  mid,  qs, qe);
+    node q2 = query( 2*index+1 , mid+1 ,  e,  qs, qe);
+    node q(0,0,0,0);
+    q.sum =  q1.sum + q2.sum;
+    q.best_left  = max(q1.best_left,q1.sum+q2.best_left);
+    q.best_right  = max(q2.best_right,q2.sum+q1.best_right);
+    
+      // V.V.I.P
+   
+   q.best = max(q1.best,q2.best);
+   q.best = max(q.best,q1.best_right+q2.best_left);
+   q.best = max(q.best,q1.sum+q2.sum);
+   q.best  = max(q.best,q.best_left);
+   q.best  = max(q.best,q.best_right);
+   return q;
+   
+}
+// Updates a node at pos[i];
+void updatenode(int index , int s , int e, int i,int val)
+{
+    //No Overlapping Case
+    if(i<s|| i>e)
+    return;
+    
+    // Complete Overlap case
+    
+    if(s==e)
+    {
+        tree[index]=node(val,val,val,val);
+        return ;
+    }
+    
+    // Partial Overlap case
+    
+    int mid=(s+e)/2;
+    updatenode( 2*index , s ,  mid,  i, val);
+    updatenode( 2*index+1 , mid+1 ,  e,  i, val);
+   
+   // Important part is here
+   tree[index].sum = tree[2*index].sum+tree[2*index+1].sum;
+   tree[index].best_left = max(tree[2*index].best_left,tree[2*index].sum+tree[2*index+1].best_left);
+   tree[index].best_right = max(tree[2*index+1].best_right,tree[2*index+1].sum+tree[2*index].best_right);
+   
+   // V.V.I.P
+   
+   tree[index].best =max(tree[2*index].best,tree[2*index+1].best);
+   tree[index].best =max(tree[2*index].best_right+tree[2*index+1].best_left,tree[index].best);
+   tree[index].best =max(tree[2*index].best_left,tree[index].best );
+   tree[index].best =max(tree[2*index+1].best_right,tree[index].best);
+   
+}
+
+// Time for action
+
+int main() {
+	
+int n,inc,q,i,s,e,l,b,r,a,index;
+	
+	cin>>n;
+	for(i=0;i<n;i++)
+	{
+		cin>>b;
+		A.push_back(b);
+	}
+	index=1;
+	s=0;
+	e = n-1;
+	inc =2 ;
+	buildTree(index,s,e);
+	cin>>q;
+	while(q--)
+	{
+	    cin>>a>>l>>r;
+	    if(a==1)
+	    cout<<query(index,s,e,l-1,r-1).best<<endl;
+	    else
+	    updatenode(index,s,e,l-1,r);
+	 }  
+//	 cout<<INT_MIN;
+	return 0;
+}
+
